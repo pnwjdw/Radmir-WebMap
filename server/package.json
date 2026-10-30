@@ -1,0 +1,9 @@
+{
+  "name": "radmir-map-viewer-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Локальный сервер карты RADMIR: читает файлы игры из папки decrypted и отдаёт браузеру геометрию, текстуры и коллизии.",
+  "engines": { "node": ">=18" },
+  "scripts": { "start": "node main.js --open" }
+}

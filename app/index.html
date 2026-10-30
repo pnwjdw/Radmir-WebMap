@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Карта RADMIR — просмотр и редактор</title>
+<link rel="stylesheet" href="styles.css">
+<script>
+(function () {
+  var problems = [];
+  if (location.protocol === 'file:') problems.push('Страница открыта как файл с диска. Так она работать не будет: запустите «Запуск.bat», он сам откроет карту в браузере.');
+  var gl = null;
+  try { gl = document.createElement('canvas').getContext('webgl2'); } catch (e) { gl = null; }
+  if (!gl) problems.push('Браузер не дал доступ к WebGL 2, без него 3D не нарисовать. Обновите браузер (Chrome, Edge, Firefox или Яндекс Браузер), включите в его настройках аппаратное ускорение и обновите драйвер видеокарты.');
+  var maps = !!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'));
+  if (!maps) problems.push('Браузер слишком старый. Подойдут Chrome или Edge версии 89 и новее, Firefox 108+, Safari 16.4+.');
+  if (!problems.length) return;
+  window.radmirBlocked = problems;
+  document.addEventListener('DOMContentLoaded', function () {
+    var box = document.getElementById('loading');
+    if (!box) return;
+    var html = '<b>Карту не получится открыть в этом браузере</b>';
+    for (var i = 0; i < problems.length; i++) html += '<p>' + problems[i] + '</p>';
+    box.innerHTML = html;
+    box.className = 'overlay-msg blocked';
+  });
+})();
+</script>
+<script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/addons/" } }</script>
+</head>
+<body>
+<noscript><div class="overlay-msg blocked"><b>В браузере выключен JavaScript</b><p>Без него карта не работает. Включите JavaScript для адреса 127.0.0.1 и обновите страницу.</p></div></noscript>
+<header id="toolbar">
+  <div class="tb-group" title="Режим камеры">
+    <button data-act="mode-fly" class="tg" title="Свободный полёт (WASD, мышь с правой кнопкой)">Полёт</button>
+    <button data-act="mode-orbit" class="tg" title="Орбита вокруг выделения (O)">Орбита</button>
+    <button data-act="mode-top" class="tg" title="Вид сверху (T)">Сверху</button>
+    <button data-act="lock" title="Управление взглядом мышью; Esc — отпустить курсор (L)">Взгляд мышью</button>
+  </div>
+  <div class="tb-group" title="Скорость полёта: колесо мыши; Shift — быстрее, Alt/Ctrl — точно">
+    <label>Скорость <input id="speed" type="range" min="0" max="100" value="45"></label><span id="speed-val" class="num">40 м/с</span>
+  </div>
+  <div class="tb-group">
+    <button data-act="focus" title="Фокус на выделении (F)">Фокус</button>
+    <button data-act="goto" title="Перейти к координатам (G)">Координаты…</button>
+    <button data-act="bookmark" title="Добавить закладку камеры (B)">+ Закладка</button>
+    <select id="bookmarks" title="Закладки камеры"><option value="">Закладки</option></select>
+  </div>
+  <div class="tb-group" title="Манипулятор выделенных объектов">
+    <button data-act="giz-none" class="tg" title="Только выбор (0)">Выбор</button>
+    <button data-act="giz-translate" class="tg" title="Перемещение (1)">Двигать</button>
+    <button data-act="giz-rotate" class="tg" title="Поворот (2)">Вращать</button>
+    <button data-act="giz-scale" class="tg" title="Масштаб (3)">Масштаб</button>
+    <label title="Шаг сетки, м (0 — без привязки)">Сетка <input id="snap-grid" type="number" min="0" step="0.25" value="0" class="w4"></label>
+    <label title="Шаг поворота, градусы">Угол <input id="snap-angle" type="number" min="0" step="5" value="0" class="w4"></label>
+    <label title="После перемещения опустить объект на поверхность под ним"><input id="snap-surface" type="checkbox"> к поверхности</label>
+  </div>
+  <div class="tb-group">
+    <button data-act="dup" title="Копировать выделенное (Ctrl+D)">Копия</button>
+    <button data-act="hide" title="Скрыть / показать (Ctrl+H)">Скрыть</button>
+    <button data-act="isolate" class="tg" title="Показать только выделенное (I)">Изолировать</button>
+    <button data-act="drop" title="Опустить на поверхность">На поверхность</button>
+    <button data-act="delete" title="Удалить выделенное (Delete); базовые объекты помечаются удалёнными в слое">Удалить</button>
+    <button data-act="reset-sel" title="Вернуть исходное состояние выделенного">Сброс объекта</button>
+    <button data-act="undo" title="Отменить (Ctrl+Z)">↶</button>
+    <button data-act="redo" title="Повторить (Ctrl+Y)">↷</button>
+  </div>
+  <div class="tb-group">
+    <button data-act="save" title="Сохранить проект на сервере (Ctrl+S)">Сохранить</button>
+    <button data-act="shot" title="Снимок сцены PNG (P)">Снимок</button>
+    <button data-act="help" title="Справка (F1)">?</button>
+  </div>
+</header>
+<div id="main">
+  <aside id="left" class="panel">
+    <nav class="tabs" data-tabs="left">
+      <button data-tab="search" class="active">Поиск</button><button data-tab="library">Библиотека</button><button data-tab="files">Файлы</button><button data-tab="layers">Слои</button><button data-tab="profile">Профиль</button><button data-tab="project">Проект</button>
+      <button class="collapse" data-collapse="left" title="Свернуть панель">«</button>
+    </nav>
+    <section data-pane="search" class="pane active">
+      <input id="search-q" type="search" placeholder="ID, модель, DFF, TXD, COL, IMG, IDE, IPL, iid:123…">
+      <div id="search-out" class="scroll"></div>
+    </section>
+    <section data-pane="library" class="pane">
+      <div class="row wrap">
+        <input id="lib-q" type="search" placeholder="Имя модели или ID">
+        <select id="lib-cat"></select>
+        <select id="lib-arch"><option value="">Все архивы</option></select>
+        <label><input id="lib-active" type="checkbox" checked> только активные IMG</label>
+        <label><input id="lib-thumbs" type="checkbox" checked> превью</label>
+      </div>
+      <div id="lib-count" class="muted small"></div>
+      <div id="lib-list" class="scroll virtual"></div>
+    </section>
+    <section data-pane="files" class="pane">
+      <div class="row wrap"><input id="files-q" type="search" placeholder="Путь файла"><select id="files-kind"></select></div>
+      <div id="files-list" class="scroll"></div>
+    </section>
+    <section data-pane="layers" class="pane scroll" id="layers"></section>
+    <section data-pane="profile" class="pane scroll" id="profile"></section>
+    <section data-pane="project" class="pane scroll" id="project"></section>
+  </aside>
+  <div class="splitter" data-split="left" title="Перетащите, чтобы изменить ширину"></div>
+  <section id="center">
+    <canvas id="view" tabindex="0"></canvas>
+    <div id="labels"></div>
+    <div id="crosshair" hidden>+</div>
+    <div id="hud">
+      <div id="hud-pos" class="num"></div>
+      <div id="hud-state"></div>
+    </div>
+    <div id="loading" class="overlay-msg">Запуск…</div>
+    <canvas id="minimap" width="220" height="220" title="Мини-карта: щелчок — перелёт в точку"></canvas>
+    <button id="show-left" class="edge-btn left" hidden title="Показать левую панель">»</button>
+    <button id="show-right" class="edge-btn right" hidden title="Показать инспектор">«</button>
+  </section>
+  <div class="splitter" data-split="right" title="Перетащите, чтобы изменить ширину"></div>
+  <aside id="right" class="panel">
+    <nav class="tabs"><span class="title">Инспектор</span><button class="collapse" data-collapse="right" title="Свернуть инспектор">»</button></nav>
+    <div id="inspector" class="scroll"><p class="muted pad">Выберите объект щелчком по карте, через поиск, библиотеку или список файлов.</p></div>
+  </aside>
+</div>
+<div class="hsplitter" title="Перетащите, чтобы изменить высоту"></div>
+<footer id="bottom" class="panel">
+  <nav class="tabs" data-tabs="bottom">
+    <button data-tab="status" class="active">Загрузка</button><button data-tab="diag">Диагностика</button><button data-tab="stats">Статистика</button><button data-tab="coverage">Покрытие</button><button data-tab="history">История</button>
+    <button class="collapse" data-collapse="bottom" title="Свернуть нижнюю панель">˅</button>
+  </nav>
+  <section data-pane="status" class="pane active scroll" id="status"></section>
+  <section data-pane="diag" class="pane scroll" id="diag"></section>
+  <section data-pane="stats" class="pane scroll" id="stats"></section>
+  <section data-pane="coverage" class="pane scroll" id="coverage"></section>
+  <section data-pane="history" class="pane scroll" id="history"></section>
+</footer>
+
+<div class="window" id="win-geom" hidden>
+  <div class="win-head"><span data-g="title">Геометрия</span><span class="grow"></span><button data-close>×</button></div>
+  <div class="win-tools">
+    <select data-g="mode"></select>
+    <select data-g="part"></select>
+    <select data-g="material"></select>
+    <label><input type="checkbox" data-g="bounds"> границы</label>
+    <label><input type="checkbox" data-g="frames"> узлы (фреймы)</label>
+    <label><input type="checkbox" data-g="collision"> коллизия</label>
+    <label><input type="checkbox" data-g="hiddenParts"> скрытые атомики</label>
+    <button data-g="reset">Вписать</button><button data-g="shot">PNG</button>
+  </div>
+  <div class="win-body split"><canvas></canvas><div data-g="info" class="scroll info"></div></div>
+</div>
+<div class="window" id="win-tex" hidden>
+  <div class="win-head"><span data-t="title">Текстуры</span><span class="grow"></span><button data-close>×</button></div>
+  <div class="win-body scroll" data-t="body"></div>
+</div>
+<div class="window" id="win-col" hidden>
+  <div class="win-head"><span data-c="title">Коллизия</span><span class="grow"></span><button data-close>×</button></div>
+  <div class="win-body scroll" data-c="body"></div>
+</div>
+<div class="window" id="win-help" hidden>
+  <div class="win-head"><span>Справка по управлению</span><span class="grow"></span><button data-close>×</button></div>
+  <div class="win-body scroll" id="help-body"></div>
+</div>
+<div class="window modal" id="win-dialog" hidden>
+  <div class="win-head"><span data-d="title"></span><span class="grow"></span><button data-close>×</button></div>
+  <div class="win-body scroll" data-d="body"></div>
+</div>
+<div id="toasts"></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

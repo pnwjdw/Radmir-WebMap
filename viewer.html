@@ -1,0 +1,893 @@
+<title>Дороги, деревья, провода</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Unbounded:wght@500;600&display=swap">
+<style>:root {
+  --bg: #eef1ef;
+  --surface: #ffffff;
+  --sunk: #e2e8e4;
+  --ink: #16201b;
+  --muted: #56645e;
+  --line: #cfd8d3;
+  --accent: #1d6b58;
+  --accent-ink: #ffffff;
+  --road: #a87400;
+  --tree: #2b7a43;
+  --wire: #b24f26;
+  --road-bg: #f5ead0;
+  --tree-bg: #dbeee0;
+  --wire-bg: #f6dfd4;
+  --hi: #fff3c4;
+  --shadow: 0 1px 2px rgb(22 32 27 / 0.06), 0 4px 16px rgb(22 32 27 / 0.06);
+  --font-display: "Unbounded", "Golos Text", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Golos Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, "Cascadia Mono", "Courier New", monospace;
+  --row: 56px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1513; --surface: #161e1b; --sunk: #1c2622; --ink: #e2eae6; --muted: #98a7a0; --line: #2b3732;
+    --accent: #52b597; --accent-ink: #0a1310; --road: #e0b03c; --tree: #5fc47e; --wire: #e3875c;
+    --road-bg: #372e14; --tree-bg: #16301f; --wire-bg: #3a2117; --hi: #33301a;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1513; --surface: #161e1b; --sunk: #1c2622; --ink: #e2eae6; --muted: #98a7a0; --line: #2b3732;
+  --accent: #52b597; --accent-ink: #0a1310; --road: #e0b03c; --tree: #5fc47e; --wire: #e3875c;
+  --road-bg: #372e14; --tree-bg: #16301f; --wire-bg: #3a2117; --hi: #33301a;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.45 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 18px 0;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1680px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+
+header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(20px, 2.4vw, 28px); letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); margin: 4px 0 0; max-width: 70ch; }
+.sub b { color: var(--ink); font-weight: 600; }
+
+.cats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.cat {
+  text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 10px;
+  padding: 10px 12px 10px 14px; cursor: pointer; display: grid; gap: 2px; position: relative; overflow: hidden;
+}
+.cat::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--c, var(--accent)); }
+.cat[aria-pressed="true"] { border-color: var(--c, var(--accent)); box-shadow: inset 0 0 0 1px var(--c, var(--accent)); background: var(--cbg, var(--sunk)); }
+.cat .t { font-weight: 600; }
+.cat .n { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cat .big { font-family: var(--font-display); font-size: 20px; font-weight: 500; font-variant-numeric: tabular-nums; }
+
+.tools { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+.tools input[type="search"] { flex: 1 1 260px; min-width: 0; padding: 7px 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); }
+.tools select { padding: 6px 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); max-width: 100%; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); cursor: pointer; user-select: none; font-size: 13px; }
+.chip input { margin: 0; accent-color: var(--accent); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: var(--bg); padding: 6px 12px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.kindlabel { font-family: var(--font-mono); font-size: 12px; }
+
+.work { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+.listhead { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.listhead label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; color: var(--ink); }
+.listhead input { accent-color: var(--accent); }
+.scroller { height: min(72vh, 820px); overflow-y: auto; position: relative; contain: strict; }
+.rows { position: relative; }
+.row {
+  position: absolute; left: 0; right: 0; height: var(--row); display: grid; grid-template-columns: 22px minmax(0, 1fr) auto;
+  gap: 10px; align-items: center; padding: 0 12px; border-bottom: 1px solid var(--line); cursor: pointer;
+}
+.row:hover { background: var(--bg); }
+.row.on { background: var(--hi); }
+.row input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
+.row .l1 { display: flex; gap: 8px; align-items: baseline; min-width: 0; }
+.row .nm { font-family: var(--font-mono); font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .ar { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .l2 { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .rt { display: flex; gap: 10px; align-items: center; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.k { font-family: var(--font-mono); font-size: 11px; padding: 0 5px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); flex: none; }
+.dots { display: inline-flex; gap: 3px; }
+.dot { width: 8px; height: 8px; border-radius: 2px; background: var(--line); }
+.dot.c0 { background: var(--road); } .dot.c1 { background: var(--tree); } .dot.c2 { background: var(--wire); }
+.empty { padding: 40px 20px; text-align: center; color: var(--muted); }
+
+.detail { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto; }
+.dbody { padding: 14px; display: flex; flex-direction: column; gap: 14px; }
+.dtitle { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.dtitle h2 { font-family: var(--font-mono); font-size: 18px; font-weight: 500; margin: 0; word-break: break-all; }
+.meta { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 12px; font-size: 13px; margin: 0; }
+.meta dt { color: var(--muted); }
+.meta dd { margin: 0; min-width: 0; word-break: break-word; }
+.mono { font-family: var(--font-mono); font-size: 12.5px; }
+.sect h3 { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; font-weight: 600; }
+.why { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.why li { padding: 6px 10px; border-radius: 7px; font-size: 13px; border-left: 3px solid var(--c); background: var(--cbg); word-break: break-word; }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { border: 1px solid var(--line); background: var(--bg); border-radius: 7px; padding: 6px 11px; cursor: pointer; font-size: 13px; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.view3d { position: relative; aspect-ratio: 4 / 3; max-width: 100%; background: var(--sunk); border-radius: 8px; overflow: hidden; }
+.view3d canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+.view3d .msg { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); text-align: center; padding: 20px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; gap: 5px; align-items: center; }
+.legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.mini { width: 100%; aspect-ratio: 1 / 1; max-width: 100%; display: block; border-radius: 8px; background: var(--sunk); cursor: zoom-in; }
+.taglist { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag { font-family: var(--font-mono); font-size: 11.5px; padding: 1px 6px; border-radius: 4px; background: var(--sunk); }
+.links { display: flex; flex-direction: column; gap: 4px; }
+.links button { text-align: left; border: 0; background: none; padding: 2px 0; cursor: pointer; font-family: var(--font-mono); font-size: 12.5px; color: var(--accent); }
+.links button:hover { text-decoration: underline; }
+.links .off { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); }
+.coords { max-height: 140px; overflow: auto; font-family: var(--font-mono); font-size: 12px; background: var(--sunk); border-radius: 6px; padding: 6px 8px; white-space: pre; }
+
+.mapwrap { position: relative; height: min(72vh, 820px); overflow: hidden; border-radius: 0 0 10px 10px; background: #13375f; }
+.mapwrap canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
+.maptip { position: absolute; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; font-size: 12px; box-shadow: var(--shadow); white-space: nowrap; }
+.mapctl { position: absolute; right: 10px; top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.mapctl button { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 18px; line-height: 1; }
+
+.selbar {
+  position: sticky; bottom: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between;
+  background: var(--surface); border: 1px solid var(--accent); border-radius: 10px 10px 0 0; padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)); box-shadow: var(--shadow);
+}
+.selbar .count { font-weight: 600; }
+.selbar .count small { font-weight: 400; color: var(--muted); font-family: var(--font-mono); }
+footer { color: var(--muted); font-size: 12.5px; padding: 6px 0 24px; display: flex; flex-direction: column; gap: 6px; max-width: 110ch; }
+footer code { font-family: var(--font-mono); font-size: 12px; background: var(--sunk); padding: 0 4px; border-radius: 4px; }
+
+dialog { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); width: min(760px, calc(100vw - 32px)); padding: 0; box-shadow: var(--shadow); }
+dialog::backdrop { background: rgb(10 16 14 / 0.45); }
+.dlg { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.dlg h3 { margin: 0; font-size: 16px; }
+.dlg textarea { width: 100%; height: 46vh; font-family: var(--font-mono); font-size: 12.5px; border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: var(--bg); resize: vertical; }
+.note { font-size: 12.5px; color: var(--muted); margin: 0; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(80px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 8px; font-size: 13px; z-index: 20; }
+
+@media (max-width: 980px) {
+  .work { grid-template-columns: minmax(0, 1fr); }
+  .detail { position: static; max-height: none; }
+  .cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .row .rt .sz { display: none; }
+  .row .ar { display: none; }
+  .scroller, .mapwrap { height: 62vh; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Дороги, деревья, провода</h1>
+      <p class="sub" id="sub">Файлы RADMIR CRMP: модели (.dff), текстуры (.txd) и коллизии (.col) из IMG-архивов и папок игры, связанные с дорогами, растительностью и проводами.</p>
+    </div>
+  </header>
+
+  <div class="cats" id="cats" role="group" aria-label="Раздел"></div>
+
+  <div class="tools">
+    <input type="search" id="q" placeholder="Поиск: имя файла, txd, текстура, причина…" aria-label="Поиск">
+    <label class="chip"><input type="checkbox" id="k-dff" checked><span class="kindlabel">.dff</span> модели</label>
+    <label class="chip"><input type="checkbox" id="k-txd" checked><span class="kindlabel">.txd</span> текстуры</label>
+    <label class="chip"><input type="checkbox" id="k-col" checked><span class="kindlabel">.col</span> коллизии</label>
+    <select id="arch" aria-label="Архив"></select>
+    <select id="why" aria-label="Почему в списке">
+      <option value="">Любая причина</option>
+      <option value="name">По названию файла</option>
+      <option value="surf">По покрытию (асфальт, грунт, тротуар)</option>
+      <option value="tex">По текстурам</option>
+      <option value="txd">По названию txd модели</option>
+      <option value="link">Через модели из списка (txd, col)</option>
+    </select>
+    <label class="chip"><input type="checkbox" id="placed"> стоят на карте</label>
+    <select id="sort" aria-label="Сортировка">
+      <option value="src">Как в архивах</option>
+      <option value="name">По имени</option>
+      <option value="placed">Чаще стоят на карте</option>
+      <option value="size">Крупнее файл</option>
+      <option value="tris">Больше треугольников</option>
+    </select>
+    <div class="seg" role="group" aria-label="Вид">
+      <button type="button" id="v-list" aria-pressed="true">Список</button>
+      <button type="button" id="v-map" aria-pressed="false">Карта</button>
+    </div>
+  </div>
+
+  <div class="work">
+    <section class="panel" aria-label="Файлы">
+      <div class="listhead">
+        <label><input type="checkbox" id="selall"> выбрать все показанные</label>
+        <span id="shown"></span>
+      </div>
+      <div id="listview">
+        <div class="scroller" id="scroller"><div class="rows" id="rows"></div></div>
+      </div>
+      <div id="mapview" hidden>
+        <div class="mapwrap" id="mapwrap">
+          <canvas id="bigmap"></canvas>
+          <div class="mapctl">
+            <button type="button" id="zin" aria-label="Приблизить">+</button>
+            <button type="button" id="zout" aria-label="Отдалить">−</button>
+            <button type="button" id="zfit" aria-label="Показать всё" title="Показать всё">⤢</button>
+          </div>
+          <div class="maptip" id="maptip" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel detail" id="detail" aria-label="Выбранный файл">
+      <div class="empty" id="dempty">
+        <p><b>Выберите файл в списке</b> или точку на карте.</p>
+        <p class="note">Здесь будут 3D-просмотр модели, где она стоит на карте, её txd и col и почему файл попал в список.</p>
+      </div>
+      <div class="dbody" id="dbody" hidden></div>
+    </aside>
+  </div>
+
+  <div class="selbar" id="selbar" hidden>
+    <span class="count" id="selcount"></span>
+    <div class="btns">
+      <button type="button" class="btn" id="s-rel" title="Добавить к выбранным моделям их .txd и .col из списка">+ их txd и col</button>
+      <button type="button" class="btn" id="s-show">Только выбранные</button>
+      <button type="button" class="btn primary" id="s-export">Список для IMG-редактора</button>
+      <button type="button" class="btn" id="s-csv">Таблица CSV</button>
+      <button type="button" class="btn" id="s-clear">Снять выбор</button>
+    </div>
+  </div>
+
+  <footer id="foot"></footer>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog" class="dlg">
+    <h3 id="dlgtitle">Список выбранных файлов</h3>
+    <p class="note" id="dlgnote"></p>
+    <textarea id="dlgtext" readonly spellcheck="false" aria-label="Текст списка"></textarea>
+    <div class="btns">
+      <button type="button" class="btn primary" id="d-copy">Скопировать</button>
+      <button type="button" class="btn" id="d-save">Сохранить файлом</button>
+      <button class="btn" value="close">Закрыть</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="data/catalog.js"></script>
+<script>(() => {
+  "use strict";
+  const CAT = window.CAT;
+  const $ = (id) => document.getElementById(id);
+  if (!CAT) {
+    $("cats").innerHTML = "";
+    $("sub").textContent = "Не найден файл data/catalog.js. Откройте index.html из папки «Просмотр объектов», рядом с которым лежит папка data.";
+    return;
+  }
+
+  const CATS = [
+    { name: "Дороги", full: "дороги, мосты, тоннели, бордюры, знаки, остановки", color: "var(--road)", bg: "var(--road-bg)" },
+    { name: "Деревья и кусты", full: "деревья, кусты, изгороди, трава, цветы", color: "var(--tree)", bg: "var(--tree-bg)" },
+    { name: "Провода и опоры", full: "провода, кабели, ЛЭП, столбы, подстанции", color: "var(--wire)", bg: "var(--wire-bg)" },
+  ];
+  const KINDS = ["dff", "txd", "col"];
+  const files = CAT.files, sources = CAT.sources;
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const fmt = (n) => n.toLocaleString("ru-RU");
+  const kb = (b) => b >= 1048576 ? (b / 1048576).toFixed(1).replace(".", ",") + " МБ" : Math.max(1, Math.round(b / 1024)) + " КБ";
+
+  const byTxd = new Map(), txdFiles = new Map(), colOf = new Map(), dffByBase = new Map();
+  const push = (m, k, v) => { const a = m.get(k); a ? a.push(v) : m.set(k, [v]); };
+  files.forEach((f, i) => {
+    f.i = i;
+    f.base = f.n.toLowerCase().replace(/\.[^.]+$/, "");
+    const m = /^(\d[\d\s]*[.,]?\d*\s*[КМ]?Б)\s+([\s\S]*)$/.exec(f.d || "");
+    f.desc = m ? m[2] : (f.d || "");
+    f.sz = kb(f.b);
+    f.why = (f.r[0].length ? f.r[0] : f.r[1].length ? f.r[1] : f.r[2])[0] || "";
+    f.hay = (f.n + " " + (f.t || "") + " " + f.desc + " " + f.r.flat().join(" ") + " " + f.x.join(" ") + " " + sources[f.s].p).toLowerCase();
+    if (f.k === "dff") { if (f.t) push(byTxd, f.t, i); push(dffByBase, f.base, i); }
+    if (f.k === "txd") push(txdFiles, f.base, i);
+    if (f.k === "col") f.x.forEach((m) => push(colOf, m, i));
+  });
+  const posCache = new Map();
+  function posOf(f) {
+    if (f.k !== "dff" || !f.u) return null;
+    if (posCache.has(f.base)) return posCache.get(f.base);
+    const b64 = CAT.pos[f.base];
+    if (!b64) return null;
+    const bin = atob(b64), u8 = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    const arr = new Int16Array(u8.buffer, 0, u8.length >> 1);
+    posCache.set(f.base, arr);
+    return arr;
+  }
+
+  const state = { cat: -1, kinds: new Set(KINDS), arch: "", why: "", placed: false, q: "", sort: "src", onlySel: false, view: "list", current: -1 };
+  let sel = new Set();
+  const SEL_KEY = "rr-objects-selection-v1";
+  try { const saved = JSON.parse(localStorage.getItem(SEL_KEY) || "[]"); const idx = new Map(files.map((f) => [f.s + "|" + f.n, f.i])); saved.forEach((k) => idx.has(k) && sel.add(idx.get(k))); } catch (e) {}
+  const saveSel = () => { try { localStorage.setItem(SEL_KEY, JSON.stringify([...sel].map((i) => files[i].s + "|" + files[i].n))); } catch (e) {} };
+
+  const totals = CATS.map((_, c) => KINDS.map((k) => files.filter((f) => f.c & (1 << c) && f.k === k).length));
+  const allTotals = KINDS.map((k) => files.filter((f) => f.k === k).length);
+  function renderCats() {
+    const card = (c, title, counts, color, bg) => {
+      const sum = counts[0] + counts[1] + counts[2];
+      return `<button type="button" class="cat" data-c="${c}" aria-pressed="${state.cat === c}" style="--c:${color};--cbg:${bg}">
+        <span class="t">${esc(title)}</span><span class="big">${fmt(sum)}</span>
+        <span class="n">dff ${fmt(counts[0])} · txd ${fmt(counts[1])} · col ${fmt(counts[2])}</span></button>`;
+    };
+    $("cats").innerHTML = card(-1, "Всё вместе", allTotals, "var(--accent)", "var(--sunk)") + CATS.map((k, c) => card(c, k.name, totals[c], k.color, k.bg)).join("");
+  }
+  $("cats").addEventListener("click", (e) => {
+    const b = e.target.closest(".cat");
+    if (!b) return;
+    state.cat = +b.dataset.c;
+    renderCats();
+    apply();
+  });
+
+  {
+    const counts = new Map();
+    files.forEach((f) => counts.set(f.s, (counts.get(f.s) || 0) + 1));
+    const opts = ['<option value="">Все архивы и папки</option>'];
+    sources.forEach((s, i) => { if (counts.get(i)) opts.push(`<option value="${i}">${esc(s.p)} (${counts.get(i)})</option>`); });
+    $("arch").innerHTML = opts.join("");
+  }
+
+  const whyKind = (r) => r.startsWith("в названии") ? "name" : r.startsWith("покрытие") ? "surf"
+    : r.startsWith("txd «") ? "txd" : (r.startsWith("текстуры для моделей") || r.startsWith("коллизии моделей")) ? "link"
+    : r.startsWith("процедурная") ? "name" : "tex";
+  let view = [];
+  function apply() {
+    const words = state.q.toLowerCase().split(/\s+/).filter(Boolean);
+    const mask = state.cat < 0 ? 7 : 1 << state.cat;
+    view = files.filter((f) => {
+      if (!(f.c & mask) || !state.kinds.has(f.k)) return false;
+      if (state.onlySel && !sel.has(f.i)) return false;
+      if (state.arch !== "" && f.s !== +state.arch) return false;
+      if (state.placed && !(f.u > 0)) return false;
+      if (state.why) {
+        let ok = false;
+        for (let c = 0; c < 3 && !ok; c++) if (mask & (1 << c)) ok = f.r[c].some((r) => whyKind(r) === state.why);
+        if (!ok) return false;
+      }
+      for (const w of words) if (!f.hay.includes(w)) return false;
+      return true;
+    });
+    const s = state.sort;
+    if (s === "name") view.sort((a, b) => a.n.localeCompare(b.n));
+    else if (s === "placed") view.sort((a, b) => (b.u || 0) - (a.u || 0) || a.i - b.i);
+    else if (s === "size") view.sort((a, b) => b.b - a.b);
+    else if (s === "tris") view.sort((a, b) => (b.tr || 0) - (a.tr || 0) || a.i - b.i);
+    const kinds = KINDS.map((k) => view.filter((f) => f.k === k).length);
+    $("shown").textContent = `показано ${fmt(view.length)} · dff ${fmt(kinds[0])} · txd ${fmt(kinds[1])} · col ${fmt(kinds[2])}`;
+    $("scroller").scrollTop = 0;
+    renderRows(true);
+    syncSelAll();
+    if (state.view === "map") BigMap.rebuild();
+  }
+  const reasonFor = (f) => {
+    if (state.cat >= 0) return f.r[state.cat][0] || "";
+    return f.why;
+  };
+
+  const ROW = 56;
+  function renderRows(force) {
+    const sc = $("scroller"), rows = $("rows");
+    rows.style.height = view.length * ROW + "px";
+    if (!view.length) { rows.innerHTML = `<div class="empty">Ничего не найдено. Измените фильтры или поиск.</div>`; return; }
+    const first = Math.max(0, Math.floor(sc.scrollTop / ROW) - 6);
+    const last = Math.min(view.length, first + Math.ceil(sc.clientHeight / ROW) + 14);
+    if (!force && rows.dataset.range === first + ":" + last) return;
+    rows.dataset.range = first + ":" + last;
+    let html = "";
+    for (let j = first; j < last; j++) {
+      const f = view[j];
+      const dots = [0, 1, 2].map((c) => f.c & (1 << c) ? `<i class="dot c${c}" title="${CATS[c].name}"></i>` : "").join("");
+      html += `<div class="row${f.i === state.current ? " on" : ""}" style="top:${j * ROW}px" data-i="${f.i}">
+        <input type="checkbox" aria-label="Выбрать ${esc(f.n)}" ${sel.has(f.i) ? "checked" : ""}>
+        <div style="min-width:0"><div class="l1"><span class="nm">${esc(f.n)}</span><span class="k">${f.k}</span><span class="ar">${esc(sources[f.s].p)}</span></div>
+        <div class="l2">${esc(reasonFor(f))}</div></div>
+        <div class="rt"><span class="dots">${dots}</span>${f.u ? `<span title="стоит на карте">×${fmt(f.u)}</span>` : ""}<span class="sz">${f.sz}</span></div></div>`;
+    }
+    rows.innerHTML = html;
+  }
+  let rafList = 0;
+  $("scroller").addEventListener("scroll", () => { if (!rafList) rafList = requestAnimationFrame(() => { rafList = 0; renderRows(false); }); });
+  window.addEventListener("resize", () => renderRows(true));
+  $("rows").addEventListener("click", (e) => {
+    const row = e.target.closest(".row");
+    if (!row) return;
+    const i = +row.dataset.i;
+    if (e.target.matches("input")) { toggleSel([i], e.target.checked); return; }
+    showDetail(i);
+  });
+
+  function toggleSel(list, on) {
+    list.forEach((i) => on ? sel.add(i) : sel.delete(i));
+    saveSel();
+    renderSelBar();
+    syncSelAll();
+    renderRows(true);
+    if (state.current >= 0) updateDetailSelButton();
+  }
+  function syncSelAll() {
+    const box = $("selall");
+    const n = view.reduce((a, f) => a + (sel.has(f.i) ? 1 : 0), 0);
+    box.checked = view.length > 0 && n === view.length;
+    box.indeterminate = n > 0 && n < view.length;
+  }
+  $("selall").addEventListener("change", (e) => toggleSel(view.map((f) => f.i), e.target.checked));
+  function renderSelBar() {
+    const bar = $("selbar");
+    bar.hidden = sel.size === 0;
+    if (!sel.size) { if (state.onlySel) { state.onlySel = false; $("s-show").textContent = "Только выбранные"; apply(); } return; }
+    const k = KINDS.map((x) => [...sel].filter((i) => files[i].k === x).length);
+    $("selcount").innerHTML = `Выбрано: ${fmt(sel.size)} <small>dff ${k[0]} · txd ${k[1]} · col ${k[2]}</small>`;
+  }
+  $("s-clear").addEventListener("click", () => { sel.clear(); saveSel(); renderSelBar(); renderRows(true); syncSelAll(); if (state.current >= 0) updateDetailSelButton(); });
+  $("s-show").addEventListener("click", () => { state.onlySel = !state.onlySel; $("s-show").textContent = state.onlySel ? "Показать все" : "Только выбранные"; apply(); });
+  $("s-rel").addEventListener("click", () => {
+    const add = [];
+    sel.forEach((i) => related(files[i]).forEach((j) => !sel.has(j) && add.push(j)));
+    toggleSel(add, true);
+    toast(add.length ? `Добавлено ${add.length}: txd и col выбранных моделей` : "Все их txd и col уже выбраны");
+  });
+  function related(f) {
+    if (f.k !== "dff") return [];
+    return [...(f.t ? txdFiles.get(f.t) || [] : []), ...(colOf.get(f.base) || [])];
+  }
+
+  function exportText() {
+    const chosen = [...sel].map((i) => files[i]).sort((a, b) => a.s - b.s || a.n.localeCompare(b.n));
+    const lines = [`# ${chosen.length} файлов: ${CATS.map((c, i) => c.name.toLowerCase()).join(", ")} (RADMIR CRMP)`, "# Сгруппировано по архивам: откройте архив в IMG-редакторе и найдите файлы по имени.", ""];
+    let last = -1;
+    chosen.forEach((f) => {
+      if (f.s !== last) { if (last >= 0) lines.push(""); lines.push(`[${sources[f.s].p}]`); last = f.s; }
+      lines.push(f.n);
+    });
+    return lines.join("\r\n");
+  }
+  function exportCsv() {
+    const q = (s) => '"' + String(s ?? "").replace(/"/g, '""') + '"';
+    const head = ["файл", "тип", "архив", "размер_байт", "id", "txd", "дороги", "деревья", "провода", "на_карте", "почему"];
+    const rows = [...sel].map((i) => files[i]).sort((a, b) => a.s - b.s || a.n.localeCompare(b.n)).map((f) =>
+      [f.n, f.k, sources[f.s].p, f.b, f.id ?? "", f.t ?? "", f.c & 1 ? 1 : 0, f.c & 2 ? 1 : 0, f.c & 4 ? 1 : 0, f.u ?? "", f.r.flat().join(" | ")].map(q).join(";"));
+    return "\uFEFF" + [head.map(q).join(";"), ...rows].join("\r\n");
+  }
+  let dlgName = "";
+  function openDialog(title, note, text, name) {
+    $("dlgtitle").textContent = title;
+    $("dlgnote").textContent = note;
+    $("dlgtext").value = text;
+    dlgName = name;
+    $("dlg").showModal();
+  }
+  $("s-export").addEventListener("click", () => openDialog("Список для IMG-редактора", "Имена файлов по архивам. Скопируйте или сохраните файлом.", exportText(), "выбранные файлы.txt"));
+  $("s-csv").addEventListener("click", () => openDialog("Таблица CSV", "Разделитель «;». Открывается в Excel.", exportCsv(), "выбранные файлы.csv"));
+  $("d-copy").addEventListener("click", () => {
+    const t = $("dlgtext").value.replace(/\r?\n/g, "\r\n");
+    navigator.clipboard.writeText(t).then(() => toast("Скопировано"), () => { $("dlgtext").select(); toast("Текст выделен: нажмите Ctrl+C"); });
+  });
+  if (window.claude) $("d-save").hidden = true;
+  $("d-save").addEventListener("click", () => {
+    try {
+      const url = URL.createObjectURL(new Blob([$("dlgtext").value.replace(/\r?\n/g, "\r\n")], { type: "text/plain;charset=utf-8" }));
+      const a = document.createElement("a");
+      a.href = url; a.download = dlgName; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+      toast("Если файл не сохранился, скопируйте текст");
+    } catch (e) { toast("Сохранение недоступно: скопируйте текст"); }
+  });
+  let toastTimer = 0;
+  function toast(text) {
+    let t = document.querySelector(".toast");
+    if (!t) { t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+    t.textContent = text; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.hidden = true), 2600);
+  }
+
+  let qTimer = 0;
+  $("q").addEventListener("input", (e) => { clearTimeout(qTimer); qTimer = setTimeout(() => { state.q = e.target.value; apply(); }, 160); });
+  KINDS.forEach((k) => $("k-" + k).addEventListener("change", (e) => { e.target.checked ? state.kinds.add(k) : state.kinds.delete(k); apply(); }));
+  $("arch").addEventListener("change", (e) => { state.arch = e.target.value; apply(); });
+  $("why").addEventListener("change", (e) => { state.why = e.target.value; apply(); });
+  $("placed").addEventListener("change", (e) => { state.placed = e.target.checked; apply(); });
+  $("sort").addEventListener("change", (e) => { state.sort = e.target.value; apply(); });
+  function setView(v) {
+    state.view = v;
+    $("v-list").setAttribute("aria-pressed", v === "list");
+    $("v-map").setAttribute("aria-pressed", v === "map");
+    $("listview").hidden = v !== "list";
+    $("mapview").hidden = v !== "map";
+    $("selall").parentElement.style.visibility = v === "list" ? "visible" : "hidden";
+    if (v === "map") BigMap.show(); else renderRows(true);
+  }
+  $("v-list").addEventListener("click", () => setView("list"));
+  $("v-map").addEventListener("click", () => setView("map"));
+
+  const WORLD = 6000;
+  const mapImg = new Image();
+  let mapReady = false;
+  mapImg.onload = () => { mapReady = true; BigMap.draw(); if (state.current >= 0) drawMini(); };
+  mapImg.src = "data/map.jpg";
+  const catColor = (c) => getComputedStyle(document.documentElement).getPropertyValue(["--road", "--tree", "--wire"][c]).trim() || "#c80";
+  function drawBase(ctx, w, h, v) {
+    ctx.fillStyle = "#13375f";
+    ctx.fillRect(0, 0, w, h);
+    if (mapReady) {
+      const x0 = (-WORLD - v.cx) * v.s + w / 2, y0 = (v.cy - WORLD) * v.s + h / 2;
+      ctx.imageSmoothingEnabled = v.s * 12000 / mapImg.width < 2;
+      ctx.drawImage(mapImg, x0, y0, 2 * WORLD * v.s, 2 * WORLD * v.s);
+    }
+  }
+  function fitView(pts, w, h, minSpan) {
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (let i = 0; i < pts.length; i += 2) { x0 = Math.min(x0, pts[i]); x1 = Math.max(x1, pts[i]); y0 = Math.min(y0, pts[i + 1]); y1 = Math.max(y1, pts[i + 1]); }
+    if (x0 > x1) return { cx: 600, cy: 400, s: Math.min(w, h) / 8500 };
+    const span = Math.max(minSpan, (x1 - x0) * 1.15, (y1 - y0) * 1.15);
+    return { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, s: Math.min(w, h) / span };
+  }
+
+  const BigMap = (() => {
+    const cv = $("bigmap"), ctx = cv.getContext("2d"), tip = $("maptip");
+    let v = null, xs = new Float32Array(0), ys = new Float32Array(0), owner = new Int32Array(0), cols = [], n = 0, dirty = true;
+    function size() {
+      const r = cv.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+      if (cv.width !== Math.round(r.width * d) || cv.height !== Math.round(r.height * d)) { cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); }
+      return { w: r.width, h: r.height, d };
+    }
+    function rebuild() {
+      const mask = state.cat < 0 ? 7 : 1 << state.cat;
+      let total = 0;
+      const list = view.filter((f) => f.k === "dff" && f.u > 0);
+      list.forEach((f) => (total += f.u));
+      xs = new Float32Array(total); ys = new Float32Array(total); owner = new Int32Array(total); n = 0;
+      cols = [catColor(0), catColor(1), catColor(2)];
+      list.forEach((f) => {
+        const p = posOf(f);
+        if (!p) return;
+        for (let i = 0; i < p.length; i += 2) { xs[n] = p[i]; ys[n] = p[i + 1]; owner[n] = f.i; n++; }
+      });
+      $("shown").textContent = `на карте ${fmt(n)} точек от ${fmt(list.length)} моделей (txd и col на карте не стоят)`;
+      if (!v) fit();
+      draw();
+    }
+    function fit() {
+      const { w, h } = size();
+      const pts = [];
+      for (let i = 0; i < n; i += Math.max(1, Math.floor(n / 4000))) pts.push(xs[i], ys[i]);
+      v = fitView(pts, w, h, 1500);
+    }
+    function draw() {
+      if (state.view !== "map") return;
+      const { w, h, d } = size();
+      if (!v) fit();
+      ctx.setTransform(d, 0, 0, d, 0, 0);
+      drawBase(ctx, w, h, v);
+      const r = Math.max(1.6, Math.min(5, v.s * 6));
+      for (let i = 0; i < n; i++) {
+        const f = files[owner[i]];
+        const c = state.cat >= 0 ? state.cat : (f.c & 1 ? 0 : f.c & 2 ? 1 : 2);
+        const sx = (xs[i] - v.cx) * v.s + w / 2, sy = (v.cy - ys[i]) * v.s + h / 2;
+        if (sx < -4 || sy < -4 || sx > w + 4 || sy > h + 4) continue;
+        ctx.fillStyle = cols[c];
+        ctx.fillRect(sx - r / 2, sy - r / 2, r, r);
+      }
+      if (state.current >= 0) {
+        const f = files[state.current], p = posOf(f);
+        if (p) {
+          ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2;
+          for (let i = 0; i < p.length; i += 2) {
+            const sx = (p[i] - v.cx) * v.s + w / 2, sy = (v.cy - p[i + 1]) * v.s + h / 2;
+            ctx.beginPath(); ctx.arc(sx, sy, r + 4, 0, Math.PI * 2); ctx.stroke();
+          }
+        }
+      }
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      ctx.font = "12px " + getComputedStyle(document.body).fontFamily;
+      const metres = 100 * Math.pow(10, Math.floor(Math.log10(Math.max(1, 120 / v.s / 100))));
+      const len = metres * v.s;
+      ctx.fillRect(12, h - 18, len, 3);
+      ctx.fillText(metres >= 1000 ? metres / 1000 + " км" : metres + " м", 12, h - 24);
+    }
+    function nearest(mx, my) {
+      const { w, h } = size();
+      let best = -1, bd = 100;
+      for (let i = 0; i < n; i++) {
+        const dx = (xs[i] - v.cx) * v.s + w / 2 - mx, dy = (v.cy - ys[i]) * v.s + h / 2 - my, dd = dx * dx + dy * dy;
+        if (dd < bd) { bd = dd; best = i; }
+      }
+      return best;
+    }
+    let drag = null, moved = false, raf = 0;
+    const redraw = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; draw(); }); };
+    cv.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY, cx: v.cx, cy: v.cy }; moved = false; cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener("pointermove", (e) => {
+      const r = cv.getBoundingClientRect();
+      if (drag) {
+        const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+        if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
+        v.cx = drag.cx - dx / v.s; v.cy = drag.cy + dy / v.s; tip.hidden = true; redraw(); return;
+      }
+      const i = nearest(e.clientX - r.left, e.clientY - r.top);
+      if (i < 0) { tip.hidden = true; return; }
+      const f = files[owner[i]];
+      tip.textContent = `${f.n} · ${xs[i]}, ${ys[i]}`;
+      tip.hidden = false;
+      tip.style.left = Math.min(r.width - tip.offsetWidth - 8, e.clientX - r.left + 12) + "px";
+      tip.style.top = (e.clientY - r.top + 12) + "px";
+    });
+    cv.addEventListener("pointerup", (e) => {
+      const r = cv.getBoundingClientRect();
+      if (drag && !moved) { const i = nearest(e.clientX - r.left, e.clientY - r.top); if (i >= 0) showDetail(owner[i]); }
+      drag = null;
+    });
+    cv.addEventListener("pointerleave", () => (tip.hidden = true));
+    function zoom(k, mx, my) {
+      const { w, h } = size();
+      if (mx === undefined) { mx = w / 2; my = h / 2; }
+      const wx = v.cx + (mx - w / 2) / v.s, wy = v.cy - (my - h / 2) / v.s;
+      v.s = Math.max(0.02, Math.min(20, v.s * k));
+      v.cx = wx - (mx - w / 2) / v.s; v.cy = wy + (my - h / 2) / v.s;
+      redraw();
+    }
+    cv.addEventListener("wheel", (e) => { e.preventDefault(); const r = cv.getBoundingClientRect(); zoom(Math.exp(-e.deltaY * 0.0015), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+    $("zin").addEventListener("click", () => zoom(1.6));
+    $("zout").addEventListener("click", () => zoom(1 / 1.6));
+    $("zfit").addEventListener("click", () => { fit(); draw(); });
+    window.addEventListener("resize", () => draw());
+    function focus(f) {
+      const p = posOf(f);
+      if (!p) return;
+      const { w, h } = size();
+      v = fitView(Array.from(p), w, h, 400);
+      draw();
+    }
+    return { show() { rebuild(); }, rebuild, draw, focus };
+  })();
+
+  const Viewer = (() => {
+    let canvas = null, gl = null, prog = null, count = 0, cam = null, bufs = [];
+    const VS = "attribute vec3 p;attribute vec3 n;attribute vec3 c;uniform mat4 m;varying vec3 v;" +
+      "void main(){gl_Position=m*vec4(p,1.0);float l=0.38+0.62*abs(dot(normalize(n),normalize(vec3(0.35,0.45,0.82))));v=c*l;}";
+    const FS = "precision mediump float;varying vec3 v;void main(){gl_FragColor=vec4(v,1.0);}";
+    const COLORS = [[0.66, 0.69, 0.67], [0.42, 0.44, 0.48], [0.80, 0.75, 0.66], [0.95, 0.80, 0.25], [0.27, 0.63, 0.33], [0.88, 0.40, 0.18]];
+    function init(cv) {
+      canvas = cv;
+      gl = cv.getContext("webgl", { antialias: true, premultipliedAlpha: false }) || cv.getContext("experimental-webgl");
+      if (!gl) return false;
+      const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); return o; };
+      prog = gl.createProgram();
+      gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS));
+      gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS));
+      gl.linkProgram(prog);
+      gl.enable(gl.DEPTH_TEST);
+      let drag = null;
+      cv.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); cv.style.cursor = "grabbing"; });
+      cv.addEventListener("pointermove", (e) => {
+        if (!drag || !cam) return;
+        cam.yaw -= (e.clientX - drag.x) * 0.01;
+        cam.pitch = Math.max(-1.5, Math.min(1.5, cam.pitch + (e.clientY - drag.y) * 0.01));
+        drag = { x: e.clientX, y: e.clientY };
+        draw();
+      });
+      cv.addEventListener("pointerup", () => { drag = null; cv.style.cursor = "grab"; });
+      cv.addEventListener("wheel", (e) => { if (!cam) return; e.preventDefault(); cam.dist *= Math.exp(e.deltaY * 0.0012); draw(); }, { passive: false });
+      cv.addEventListener("dblclick", () => { if (cam) { cam.yaw = -0.8; cam.pitch = 0.55; cam.dist = cam.r * 2.4; draw(); } });
+      return true;
+    }
+    function setMesh(entry) {
+      const [x0, y0, z0, x1, y1, z1, b64] = entry;
+      const bin = atob(b64), t = Math.floor(bin.length / 10);
+      const pos = new Float32Array(t * 9), nor = new Float32Array(t * 9), col = new Float32Array(t * 9);
+      const lo = [x0, y0, z0], span = [x1 - x0, y1 - y0, z1 - z0];
+      for (let i = 0; i < t; i++) {
+        const o = i * 10, v = [];
+        for (let k = 0; k < 9; k++) v.push(lo[k % 3] + bin.charCodeAt(o + k) / 255 * span[k % 3]);
+        const ux = v[3] - v[0], uy = v[4] - v[1], uz = v[5] - v[2], wx = v[6] - v[0], wy = v[7] - v[1], wz = v[8] - v[2];
+        let nx = uy * wz - uz * wy, ny = uz * wx - ux * wz, nz = ux * wy - uy * wx;
+        const len = Math.hypot(nx, ny, nz) || 1; nx /= len; ny /= len; nz /= len;
+        const c = COLORS[bin.charCodeAt(o + 9)] || COLORS[0];
+        for (let k = 0; k < 3; k++) {
+          pos.set([v[k * 3], v[k * 3 + 1], v[k * 3 + 2]], i * 9 + k * 3);
+          nor.set([nx, ny, nz], i * 9 + k * 3);
+          col.set(c, i * 9 + k * 3);
+        }
+      }
+      bufs.forEach((b) => gl.deleteBuffer(b));
+      bufs = [pos, nor, col].map((data, k) => {
+        const b = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, b);
+        gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+        const loc = gl.getAttribLocation(prog, ["p", "n", "c"][k]);
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 0, 0);
+        return b;
+      });
+      count = t * 3;
+      const r = Math.max(0.5, 0.5 * Math.hypot(span[0], span[1], span[2]));
+      cam = { tx: x0 + span[0] / 2, ty: y0 + span[1] / 2, tz: z0 + span[2] / 2, r, yaw: -0.8, pitch: 0.55, dist: r * 2.4 };
+      draw();
+      return t;
+    }
+    function mul(a, b) { const o = new Array(16); for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { let s = 0; for (let k = 0; k < 4; k++) s += a[k * 4 + j] * b[i * 4 + k]; o[i * 4 + j] = s; } return o; }
+    function draw() {
+      if (!gl || !cam) return;
+      const d = window.devicePixelRatio || 1, w = canvas.clientWidth, h = canvas.clientHeight;
+      if (canvas.width !== Math.round(w * d) || canvas.height !== Math.round(h * d)) { canvas.width = Math.round(w * d); canvas.height = Math.round(h * d); }
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      const cp = Math.cos(cam.pitch), e = [cam.tx + cam.dist * cp * Math.cos(cam.yaw), cam.ty + cam.dist * cp * Math.sin(cam.yaw), cam.tz + cam.dist * Math.sin(cam.pitch)];
+      const zx = e[0] - cam.tx, zy = e[1] - cam.ty, zz = e[2] - cam.tz, zl = Math.hypot(zx, zy, zz);
+      const z = [zx / zl, zy / zl, zz / zl];
+      let x = [-z[1], z[0], 0]; const xl = Math.hypot(x[0], x[1]) || 1; x = [x[0] / xl, x[1] / xl, 0];
+      const y = [z[1] * x[2] - z[2] * x[1], z[2] * x[0] - z[0] * x[2], z[0] * x[1] - z[1] * x[0]];
+      const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+      const viewM = [x[0], y[0], z[0], 0, x[1], y[1], z[1], 0, x[2], y[2], z[2], 0, -dot(x, e), -dot(y, e), -dot(z, e), 1];
+      const near = Math.max(0.05, cam.dist - cam.r * 1.6) * 0.5, far = cam.dist + cam.r * 2, f = 1 / Math.tan(0.45), nf = 1 / (near - far);
+      const proj = [f / (w / h), 0, 0, 0, 0, f, 0, 0, 0, 0, (far + near) * nf, -1, 0, 0, 2 * far * near * nf, 0];
+      gl.useProgram(prog);
+      gl.uniformMatrix4fv(gl.getUniformLocation(prog, "m"), false, new Float32Array(mul(proj, viewM)));
+      gl.drawArrays(gl.TRIANGLES, 0, count);
+    }
+    return { init, setMesh, draw, available: () => !!gl };
+  })();
+
+  const v3dCanvas = document.createElement("canvas");
+
+  const geo = {}, geoWait = {};
+  window.CATGEO = (s, data) => { geo[s] = data; (geoWait[s] || []).forEach((fn) => fn()); delete geoWait[s]; };
+  function loadGeo(s, done) {
+    if (geo[s]) return done();
+    if (geoWait[s]) return geoWait[s].push(done);
+    geoWait[s] = [done];
+    const tag = document.createElement("script");
+    tag.src = `data/geo_${s}.js`;
+    tag.onerror = () => { (geoWait[s] || []).forEach((fn) => fn(true)); delete geoWait[s]; };
+    document.head.appendChild(tag);
+  }
+
+  function linkList(idx, emptyText) {
+    if (!idx.length) return `<span class="off">${emptyText}</span>`;
+    return idx.slice(0, 60).map((j) => `<button type="button" data-go="${j}">${esc(files[j].n)} <span class="off">· ${esc(sources[files[j].s].p)}</span></button>`).join("") +
+      (idx.length > 60 ? `<span class="off">и ещё ${idx.length - 60}</span>` : "");
+  }
+  function showDetail(i) {
+    state.current = i;
+    const f = files[i];
+    $("dempty").hidden = true;
+    const body = $("dbody");
+    body.hidden = false;
+    const cats = [0, 1, 2].filter((c) => f.c & (1 << c));
+    const whyHtml = cats.map((c) => f.r[c].map((r) => `<li style="--c:${CATS[c].color};--cbg:${CATS[c].bg}"><b>${CATS[c].name}:</b> ${esc(r)}</li>`).join("")).join("");
+    let rel = "";
+    if (f.k === "dff") {
+      const tx = f.t ? txdFiles.get(f.t) || [] : [];
+      rel += `<div class="sect"><h3>Текстуры модели (${esc(f.t || "txd не указан")})</h3><div class="links">${linkList(tx, f.t ? "txd не входит в список: по его названию и текстурам он ни с чем из разделов не связан" : "модель не объявлена в IDE")}</div></div>`;
+      rel += `<div class="sect"><h3>Коллизия</h3><div class="links">${linkList(colOf.get(f.base) || [], "col с этой моделью не входит в список")}</div></div>`;
+    } else if (f.k === "txd") {
+      rel += `<div class="sect"><h3>Модели из списка с этими текстурами</h3><div class="links">${linkList(byTxd.get(f.base) || [], "моделей из списка с этим txd нет")}</div></div>`;
+    } else {
+      const inList = [];
+      f.x.forEach((m) => (dffByBase.get(m) || []).forEach((j) => inList.push(j)));
+      rel += `<div class="sect"><h3>Модели из списка в этом col</h3><div class="links">${linkList(inList, "нет")}</div></div>`;
+    }
+    const names = f.x.length ? `<div class="sect"><h3>${f.k === "col" ? "Все модели в файле" : "Текстуры"} (${f.x.length}${f.x.length >= 400 ? "+" : ""})</h3><div class="taglist">${f.x.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div></div>` : "";
+    const dims = f.bb ? `${f.bb[0].toFixed(1).replace(".", ",")} × ${f.bb[1].toFixed(1).replace(".", ",")} × ${f.bb[2].toFixed(1).replace(".", ",")} м` : "";
+    const p = posOf(f);
+    const placed = f.k !== "dff" ? "" : `<div class="sect"><h3>На карте: ${f.u ? fmt(f.u) + " шт." : "не стоит"}${f.ui ? ` · в интерьерах ${fmt(f.ui)}` : ""}</h3>
+      ${p ? `<canvas class="mini" id="mini" title="Открыть на большой карте"></canvas>
+      <details><summary class="note">Координаты (x, y)</summary><div class="coords" id="coords"></div></details>`
+      : `<p class="note">По файлам IPL модель нигде не стоит. Её может ставить сервер во время игры, или это запасная модель, которую игра не использует.</p>`}</div>`;
+    body.innerHTML = `
+      <div class="dtitle"><h2>${esc(f.n)}</h2><span class="k">${f.k}</span></div>
+      <dl class="meta">
+        <dt>Где лежит</dt><dd class="mono">${esc(sources[f.s].p)}</dd>
+        <dt>Размер</dt><dd>${f.sz}${dims ? " · модель " + dims : ""}${f.tr ? " · " + fmt(f.tr) + " треуг." : ""}</dd>
+        ${f.id !== undefined ? `<dt>ID</dt><dd class="mono">${f.id}${f.t ? " · txd " + esc(f.t) : ""}</dd>` : ""}
+        <dt>Описание</dt><dd>${esc(f.desc)}</dd>
+      </dl>
+      <div class="btns">
+        <button type="button" class="btn primary" id="d-sel"></button>
+        ${f.k === "dff" && related(f).length ? `<button type="button" class="btn" id="d-selrel">Выбрать с txd и col</button>` : ""}
+        ${p ? `<button type="button" class="btn" id="d-map">Показать на карте</button>` : ""}
+      </div>
+      <div class="sect"><h3>Почему в списке</h3><ul class="why">${whyHtml}</ul></div>
+      ${f.k === "dff" ? `<div class="sect"><h3>3D-просмотр</h3><div class="view3d" id="v3dbox"><div class="msg" id="v3dmsg">Загружаю геометрию…</div></div>
+        <div class="legend" style="margin-top:6px"><span><i style="background:#6b7079"></i>дорога, грунтовка</span><span><i style="background:#cbbfa8"></i>двор, тротуар</span><span><i style="background:#f2cc40"></i>бордюр, разметка, знак</span><span><i style="background:#45a154"></i>листва, кора</span><span><i style="background:#e0662e"></i>провод</span><span><i style="background:#a8b0ab"></i>прочее</span></div>
+        <p class="note" id="v3dnote">Тяните мышью, чтобы вращать, колесо для масштаба, двойной щелчок сбрасывает вид.</p></div>` : ""}
+      ${placed}
+      ${rel}
+      ${names}`;
+    updateDetailSelButton();
+    $("d-sel").addEventListener("click", () => toggleSel([i], !sel.has(i)));
+    if ($("d-selrel")) $("d-selrel").addEventListener("click", () => toggleSel([i, ...related(f)], true));
+    if ($("d-map")) $("d-map").addEventListener("click", () => { setView("map"); BigMap.focus(f); });
+    body.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => showDetail(+b.dataset.go)));
+    if (p) {
+      const lines = [];
+      for (let k = 0; k < Math.min(p.length, 4000); k += 2) lines.push(`${p[k]}, ${p[k + 1]}`);
+      $("coords").textContent = lines.join("\n") + (p.length > 4000 ? `\n… и ещё ${(p.length - 4000) / 2}` : "");
+      $("mini").addEventListener("click", () => { setView("map"); BigMap.focus(f); });
+      drawMini();
+    }
+    if (f.k === "dff") {
+      const msg = $("v3dmsg");
+      v3dCanvas.setAttribute("aria-label", "3D-модель " + f.n);
+      v3dCanvas.style.visibility = "hidden";
+      $("v3dbox").prepend(v3dCanvas);
+      if (!f.g) msg.textContent = "Геометрию модели прочитать не удалось.";
+      else loadGeo(f.s, (err) => {
+        if (state.current !== i) return;
+        const entry = geo[f.s] && geo[f.s][f.base];
+        if (err || !entry) { msg.textContent = "Не найден файл геометрии data/geo_" + f.s + ".js."; return; }
+        if (!Viewer.available() && !Viewer.init(v3dCanvas)) { msg.textContent = "Браузер не поддерживает WebGL: 3D-просмотр недоступен."; return; }
+        v3dCanvas.style.visibility = "visible";
+        const shown = Viewer.setMesh(entry);
+        msg.hidden = true;
+        if (f.tr > shown) $("v3dnote").textContent = `Показаны ${fmt(shown)} крупнейших треугольников из ${fmt(f.tr)}. Тяните мышью, чтобы вращать, колесо для масштаба, двойной щелчок сбрасывает вид.`;
+      });
+    }
+    document.querySelectorAll(".row.on").forEach((r) => r.classList.remove("on"));
+    const row = document.querySelector(`.row[data-i="${i}"]`);
+    if (row) row.classList.add("on");
+    if (state.view === "map") BigMap.draw();
+    if (window.matchMedia("(max-width: 980px)").matches) $("detail").scrollIntoView({ block: "start" });
+  }
+  function updateDetailSelButton() {
+    const b = $("d-sel");
+    if (b) b.textContent = sel.has(state.current) ? "Убрать из выбранных" : "Выбрать файл";
+  }
+  function drawMini() {
+    const cv = $("mini");
+    if (!cv) return;
+    const f = files[state.current], p = posOf(f);
+    if (!p) return;
+    const r = cv.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+    cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d);
+    const ctx = cv.getContext("2d");
+    ctx.setTransform(d, 0, 0, d, 0, 0);
+    const v = fitView(Array.from(p), r.width, r.height, 600);
+    drawBase(ctx, r.width, r.height, v);
+    const c = catColor(f.c & 1 ? 0 : f.c & 2 ? 1 : 2);
+    for (let k = 0; k < p.length; k += 2) {
+      const sx = (p[k] - v.cx) * v.s + r.width / 2, sy = (v.cy - p[k + 1]) * v.s + r.height / 2;
+      ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(sx, sy, 4.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = c; ctx.beginPath(); ctx.arc(sx, sy, 3, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  {
+    const skipped = sources.filter((s) => s.skip).map((s) => s.p);
+    const loose = sources.filter((s) => s.loose).length;
+    const archives = sources.filter((s) => !s.loose).length;
+    $("foot").innerHTML = `
+      <span>Просмотрено ${archives} IMG-архивов и ${loose} папок с отдельными файлами. Архивы машин, тюнинга, скинов и радара (${skipped.length} шт.) тоже проверены: там совпадения только ложные (машина broadway, мотоцикл freeway, кроссовки sneakerbinc), поэтому их файлов здесь нет.</span>
+      <span>Как отбиралось: модель попадает в раздел по названию, по своим текстурам (покрытие от 10 м², бордюры, разметка, знаки, листва, кора, провода) или по названию своего txd. Txd попадает по названию, по текстурам внутри и если даёт текстуры моделям из списка. Col попадает, если внутри коллизии моделей из списка.</span>
+      <span>«На карте N» считается по IPL игры вместе с <code>data\\maps\\map.ipl</code>. Объекты, которые сервер создаёт во время игры, сюда не входят. Выбор файлов запоминается в этом браузере.</span>`;
+  }
+
+  renderCats();
+  renderSelBar();
+  apply();
+})();
+</script>

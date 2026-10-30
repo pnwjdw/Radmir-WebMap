@@ -1,0 +1,24 @@
+import { buildIndex } from '../lib/indexer.js';
+import { Catalog } from '../lib/catalog.js';
+import { buildDefaultProfile } from '../lib/profile.js';
+import { World } from '../lib/world.js';
+
+const t0 = Date.now();
+const records = await buildIndex();
+const cat = new Catalog(records);
+console.log('catalog', cat.stats(), Date.now() - t0, 'ms');
+const p = buildDefaultProfile(cat);
+console.log('profile img active', p.img.filter((x) => x.active).length, 'ide', p.ide.filter((x) => x.active).length, 'ipl', p.ipl.filter((x) => x.active && !x.repeat).length, 'unlisted ipl', p.ipl.filter((x) => x.unlisted).length);
+console.log('missing in profile', [...p.img, ...p.ide, ...p.ipl].filter((x) => !x.file).map((x) => x.path));
+const w = new World(cat, p);
+console.log('world', JSON.stringify(w.summary(), null, 1).slice(0, 3000));
+console.log('ms', Date.now() - t0);
+const id = 18632;
+console.log('18632 active defs', (w.defsActiveById.get(id) || []).map((d) => cat.files[cat.defs[d].fid].key + ': ' + cat.defs[d].raw), 'all', (cat.defsById.get(id) || []).map((d) => cat.files[cat.defs[d].fid].key));
+const i = w.cells.get(w.spawn.cell)[0];
+const m = w.models[w.inst.mi[i]];
+console.log('instance', w.stableId(i), 'model', m, 'dff', cat.res[m.dff] && cat.res[m.dff].key, 'txd', cat.res[m.txdRid] && cat.res[m.txdRid].key, 'col', m.col && cat.res[m.col.rid].key);
+console.log('lod links', [...w.children.keys()].length, 'example', w.inst.lod.findIndex((x) => x >= 0));
+console.log('scales', w.scales.size, 'service', Object.fromEntries(Object.entries(w.service).map(([k, v]) => [k, v.length])));
+console.log('sources sample', w.sources.slice(0, 5).map((s) => [s.key, s.count, s.stream]));
+console.log('streams', w.sources.filter((s) => s.stream).length, 'old_sopki', cat.ipls.filter((s) => /sopki_stream8/.test(s.lower)).map((s) => s.key));

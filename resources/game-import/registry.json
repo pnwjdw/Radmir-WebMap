@@ -1,0 +1,284 @@
+{
+  "createdAt": "2026-10-30T01:33:27.627Z",
+  "gameDir": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP",
+  "files": [
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\CustomSAA2\\GTA.DAT",
+      "target": "resources\\game-import\\CustomSAA2\\GTA.DAT",
+      "relative": "CustomSAA2\\GTA.DAT",
+      "size": 9751,
+      "sha256": "c91b13177195f730694bb57d60bdf80cbbe8950ec301caa31c3c4cb510b46b23",
+      "copyVerified": true,
+      "kind": "manifest",
+      "purpose": "Действующий манифест: порядок IMG/IDE/IPL. Все пути существуют, блок «Generated IMG» совпадает с models\\img",
+      "check": {
+        "ok": true,
+        "summary": "активных строк: {\"IMG\":102,\"IDE\":44,\"IPL\":99}",
+        "diagnostics": 0
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\CustomSAA2\\DEFAULT.DAT",
+      "target": "resources\\game-import\\CustomSAA2\\DEFAULT.DAT",
+      "relative": "CustomSAA2\\DEFAULT.DAT",
+      "size": 638,
+      "sha256": "73f9ad44ba4bca5207baae2d94c4fd99d4c7320b728f2cb44c54ebdeb7d53ae8",
+      "copyVerified": true,
+      "kind": "manifest",
+      "purpose": "Загружается до GTA.DAT: SAMP\\CUSTOM.IMG, SAMP\\SAMP.IMG, MODELS\\GTA3.IMG, DEFAULT/VEHICLES/PEDS.IDE, WEAPONS.COL",
+      "check": {
+        "ok": true,
+        "summary": "активных строк: {\"IMG\":3,\"IDE\":3,\"COLFILE\":1}",
+        "diagnostics": 0
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\data\\gta.dat",
+      "target": "resources\\game-import\\data\\gta.dat",
+      "relative": "data\\gta.dat",
+      "size": 7949,
+      "sha256": "b09d3922d80fc573de15d708befcf04de01b7f4e070e51cc0fcd61489df498b6",
+      "copyVerified": true,
+      "kind": "manifest",
+      "purpose": "Альтернативный (устаревший) манифест: 7 IMG из него отсутствуют на диске, показывается для сравнения",
+      "check": {
+        "ok": true,
+        "summary": "активных строк: {\"IMG\":10,\"IDE\":46,\"IPL\":109}",
+        "diagnostics": 0
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\data\\default.dat",
+      "target": "resources\\game-import\\data\\default.dat",
+      "relative": "data\\default.dat",
+      "size": 577,
+      "sha256": "3abbdd89a94c73c93efa95b1657e339ba25f51e84787ff63e5b5c443951fecab",
+      "copyVerified": true,
+      "kind": "manifest",
+      "purpose": "Альтернативный default.dat без строк IMG, для сравнения",
+      "check": {
+        "ok": true,
+        "summary": "активных строк: {\"IDE\":3,\"COLFILE\":1}",
+        "diagnostics": 0
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\data\\map.zon",
+      "target": "resources\\game-import\\data\\map.zon",
+      "relative": "data\\map.zon",
+      "size": 436,
+      "sha256": "4f78672e3ee70a1f5e09cd9acebe23f0597a39e275bf493a1f1c29ccfd268775",
+      "copyVerified": true,
+      "kind": "zon",
+      "purpose": "Зоны карты: подключены в GTA.DAT, в decrypted отсутствуют",
+      "check": {
+        "ok": true,
+        "summary": "зон: 6",
+        "diagnostics": 0
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\data\\info.zon",
+      "target": "resources\\game-import\\data\\info.zon",
+      "relative": "data\\info.zon",
+      "size": 28139,
+      "sha256": "9396cf9b7bec5a797fa4614ee7ab578d910ed5cdd9d475adfb35801612ec8058",
+      "copyVerified": true,
+      "kind": "zon",
+      "purpose": "Информационные зоны: подключены в GTA.DAT, в decrypted отсутствуют",
+      "check": {
+        "ok": true,
+        "summary": "зон: 378",
+        "diagnostics": 0
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\data\\carcols.dat",
+      "target": "resources\\game-import\\data\\carcols.dat",
+      "relative": "data\\carcols.dat",
+      "size": 15329,
+      "sha256": "3464ec98db5aa250f27fa5fe0556d48613650c03892634cd065aceb1f58f6551",
+      "copyVerified": true,
+      "kind": "carcols",
+      "purpose": "Цвета кузова машин (основной и дополнительный)",
+      "check": {
+        "ok": true,
+        "summary": "цветов: 127, машин: 199",
+        "diagnostics": 0
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\data\\surfinfo.dat",
+      "target": "resources\\game-import\\data\\surfinfo.dat",
+      "relative": "data\\surfinfo.dat",
+      "size": 28106,
+      "sha256": "431b95d4dcb20ce5258f7d939902c56d50fb4ee68b30ed7a044919c666291b55",
+      "copyVerified": true,
+      "kind": "surfinfo",
+      "purpose": "Имена поверхностей для материалов коллизий COL",
+      "check": {
+        "ok": true,
+        "summary": "поверхностей: 179"
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\models\\generic\\vehicle.txd",
+      "target": "resources\\game-import\\models\\generic\\vehicle.txd",
+      "relative": "models\\generic\\vehicle.txd",
+      "size": 6062888,
+      "sha256": "168ee21ac0277d783e6ce8df3e987d0468312e38d1cbe17e6293e7efda400ebb",
+      "copyVerified": true,
+      "kind": "txd",
+      "purpose": "Общие текстуры машин (фары, грязь, номера), путь зашит в движок SA",
+      "check": {
+        "ok": true,
+        "summary": "текстур: 22, поддерживается: 22"
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\CustomSAA2\\VEHICLE.TXD",
+      "target": "resources\\game-import\\CustomSAA2\\VEHICLE.TXD",
+      "relative": "CustomSAA2\\VEHICLE.TXD",
+      "size": 81986352,
+      "sha256": "928c6362b697672343415d152a0ab1d898c53be8374d27a90c71b1372ecc553f",
+      "copyVerified": true,
+      "kind": "txd",
+      "purpose": "Второй вариант общих текстур машин (папка CustomSAA2), используется как запасной",
+      "check": {
+        "ok": true,
+        "summary": "текстур: 631, поддерживается: 631"
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\models\\generic\\wheels.DFF",
+      "target": "resources\\game-import\\models\\generic\\wheels.DFF",
+      "relative": "models\\generic\\wheels.DFF",
+      "size": 129843,
+      "sha256": "5d5fab1336f6d35a64d10082fe98a4f9e220f36b12d82cb2b177dc755c762539",
+      "copyVerified": true,
+      "kind": "dff",
+      "purpose": "Колёса тюнинга",
+      "check": {
+        "ok": true,
+        "summary": "RW 3.5.0.0, атомиков: 20, фреймов: 31"
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\models\\generic\\wheels.txd",
+      "target": "resources\\game-import\\models\\generic\\wheels.txd",
+      "relative": "models\\generic\\wheels.txd",
+      "size": 23976,
+      "sha256": "5167ad31c2b13ac502c829a6b7c544c28a38e974ec278e0c6f24585bcacc4a78",
+      "copyVerified": true,
+      "kind": "txd",
+      "purpose": "Текстуры колёс тюнинга",
+      "check": {
+        "ok": true,
+        "summary": "текстур: 11, поддерживается: 11"
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\models\\coll\\weapons.col",
+      "target": "resources\\game-import\\models\\coll\\weapons.col",
+      "relative": "models\\coll\\weapons.col",
+      "size": 560,
+      "sha256": "389a5656e0496486e1c546e1e8ffd5399c1563c717f8238dcfdee3b6756903e6",
+      "copyVerified": true,
+      "kind": "col",
+      "purpose": "Коллизии оружия (COLFILE в DEFAULT.DAT)",
+      "check": {
+        "ok": true,
+        "summary": "моделей: 5, версии: 1",
+        "diagnostics": 0
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\models\\coll\\vehicles.col",
+      "target": "resources\\game-import\\models\\coll\\vehicles.col",
+      "relative": "models\\coll\\vehicles.col",
+      "size": 1096,
+      "sha256": "4b6fa3aacf7d8be7aabf2e7048b5d7bd9bc89991b13f4f3d7334047a4f5359cf",
+      "copyVerified": true,
+      "kind": "col",
+      "purpose": "Коллизии машин из движка SA",
+      "check": {
+        "ok": true,
+        "summary": "моделей: 1, версии: 1",
+        "diagnostics": 0
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\models\\coll\\peds.col",
+      "target": "resources\\game-import\\models\\coll\\peds.col",
+      "relative": "models\\coll\\peds.col",
+      "size": 21477,
+      "sha256": "d6faa88b9227e6f6fe286f69cfd8d7348229bda267b21125b7daea4d3dd23d10",
+      "copyVerified": true,
+      "kind": "col",
+      "purpose": "Коллизии пешеходов из движка SA",
+      "check": {
+        "ok": true,
+        "summary": "моделей: 30, версии: 1",
+        "diagnostics": 3
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\anim\\ped.ifp",
+      "target": "resources\\game-import\\anim\\ped.ifp",
+      "relative": "anim\\ped.ifp",
+      "size": 2056126,
+      "sha256": "874f1458b1872fd9f69600ce53505216e938cb1c2b7c7219cb59a72cec6bc8fd",
+      "copyVerified": true,
+      "kind": "ifp",
+      "purpose": "Анимации пешеходов (заголовки для просмотра)",
+      "check": {
+        "ok": true,
+        "summary": "пакет «ped», анимаций: 311"
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\data\\water.dat",
+      "target": "resources\\game-import\\data\\water.dat",
+      "relative": "data\\water.dat",
+      "size": 127066,
+      "sha256": "7d591d0f81db658ec40309428cfc2360bd321a7854af23f507564deab1448bed",
+      "copyVerified": true,
+      "kind": "water",
+      "purpose": "Плоскости воды",
+      "check": {
+        "ok": true,
+        "summary": "полигонов воды: 589",
+        "diagnostics": 0
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\fastman92limitAdjuster_GTASA.ini",
+      "target": "resources\\game-import\\fastman92limitAdjuster_GTASA.ini",
+      "relative": "fastman92limitAdjuster_GTASA.ini",
+      "size": 14241,
+      "sha256": "3d6ae6b3ef4e1da6ca4fdc7107f85d57b7e1928b9bcac12ebd847bb813d2c320",
+      "copyVerified": true,
+      "kind": "text",
+      "purpose": "Настройки лимитов: «Max number of IMG archives = 128» (почему 102 IMG допустимы)",
+      "check": {
+        "ok": true,
+        "summary": "строк: 622"
+      }
+    },
+    {
+      "source": "C:\\Program Files (x86)\\RADMIR Games\\RADMIR CRMP\\CustomSAA2\\stream.ini",
+      "target": "resources\\game-import\\CustomSAA2\\stream.ini",
+      "relative": "CustomSAA2\\stream.ini",
+      "size": 199,
+      "sha256": "bc83bae3f70f82108f13f72eca8d92e28a3d077760f3bf809324cc307c17009a",
+      "copyVerified": true,
+      "kind": "text",
+      "purpose": "Настройки стриминга клиента",
+      "check": {
+        "ok": true,
+        "summary": "строк: 12"
+      }
+    }
+  ],
+  "missing": []
+}

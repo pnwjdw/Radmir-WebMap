@@ -1,0 +1,248 @@
+#Russia Moding Group by MIXAZZZ
+#Первичный загрузочный поток игры
+#Загрузка игровых IMG архивов (максимум 5)
+#Paths.IMG - игровые пути при разработке (при релизе в gta3.img)
+#SCRIPT.IMG - внешние скрипты, gamemod.IMG - архив мода
+IMG DATA\Paths\Paths.IMG
+#IMG DATA\script\script.IMG
+IMG SAMP\SAMPCOL.IMG
+IMG models\radm.img
+IMG models\radm_t.img
+IMG models\radm2.img
+IMG models\cars.img
+IMG models\cars2.img
+IMG models\cars_t.img
+IMG models\vice.img
+IMG models\radar.img
+#IMG DATA\MAPS\rublevo\rublevo.IMG
+
+#Загрузка файлов инициализации объектов
+
+IDE DATA\MAPS\generic\vegepart.IDE
+IDE DATA\MAPS\generic\barriers.IDE
+IDE DATA\MAPS\generic\dynamic.IDE
+IDE DATA\MAPS\generic\dynamic2.IDE
+IDE DATA\MAPS\generic\multiobj.IDE
+IDE DATA\MAPS\generic\procobj.IDE
+IDE DATA\MAPS\leveldes\levelxre.IDE
+IDE DATA\MAPS\generic\railway.IDE
+IDE DATA\MAPS\sopki\sopki.IDE
+IDE DATA\MAPS\sopki\newgen.IDE
+IDE DATA\MAPS\sopki\sopki_lesa.IDE
+IDE DATA\MAPS\Arzamas\arzamas_N.IDE
+IDE DATA\MAPS\Arzamas\arzamas_gen.IDE
+IDE DATA\MAPS\Arzamas\arzamas_park.IDE
+IDE DATA\MAPS\Arzamas\country_WN.IDE
+IDE DATA\MAPS\Arzamas\arzamas_S.IDE
+IDE DATA\MAPS\crteam\crteam.IDE
+IDE DATA\MAPS\ryazan\ryazan.IDE
+IDE DATA\MAPS\russia\garel.IDE
+IDE DATA\MAPS\russia\materik.IDE
+IDE DATA\MAPS\russia\materik_objs.IDE
+IDE DATA\MAPS\lytkarino\lytkarino.IDE
+IDE DATA\MAPS\russia\rogovichi.IDE
+IDE DATA\MAPS\russia\OpenAir.IDE
+IDE DATA\MAPS\batyrevo\batyrevo.IDE
+#IDE DATA\MAPS\rublevo\rublevo.IDE
+
+IDE DATA\MAPS\mod_int\mod_int.IDE
+IDE DATA\MAPS\mod_int\AudiosurfGame.IDE
+IDE DATA\MAPS\veh_mods\veh_mods.IDE
+IDE DATA\TXDCUT.IDE
+
+# sa-mp additions
+IDE SAMP\samp.IDE
+IDE SAMP\custom.IDE
+
+#VC
+#IDE DATA\MAPS\VC\generic.IDE
+IDE DATA\MAPS\VC\airport\airport.IDE
+#IDE DATA\MAPS\VC\airportN\airportN.IDE
+#IDE DATA\MAPS\VC\bank\bank.IDE
+#IDE DATA\MAPS\VC\bridge\bridge.IDE
+IDE DATA\MAPS\VC\cisland\cisland.IDE
+IDE DATA\MAPS\VC\club\club.IDE
+#IDE DATA\MAPS\VC\concerth\concerth.IDE
+#IDE DATA\MAPS\VC\docks\docks.IDE
+#IDE DATA\MAPS\VC\downtown\downtown.IDE
+#IDE DATA\MAPS\VC\downtows\downtows.IDE
+IDE DATA\MAPS\VC\golf\golf.IDE
+#IDE DATA\MAPS\VC\haiti\haiti.IDE
+#IDE DATA\MAPS\VC\haitin\haitin.IDE
+#IDE DATA\MAPS\VC\hotel\hotel.IDE
+#IDE DATA\MAPS\VC\islandsf\islandsf.IDE
+#IDE DATA\MAPS\VC\lawyers\lawyers.IDE
+#IDE DATA\MAPS\VC\littleha\littleha.IDE
+IDE DATA\MAPS\VC\mall\mall.IDE
+IDE DATA\MAPS\VC\mansion\mansion.IDE
+IDE DATA\MAPS\VC\nbeach\nbeach.IDE
+IDE DATA\MAPS\VC\nbeachbt\nbeachbt.IDE
+IDE DATA\MAPS\VC\nbeachw\nbeachw.IDE
+IDE DATA\MAPS\VC\oceandn\oceandn.IDE
+IDE DATA\MAPS\VC\oceandrv\oceandrv.IDE
+#IDE DATA\MAPS\VC\stadint\stadint.IDE
+IDE DATA\MAPS\VC\starisl\starisl.IDE
+#IDE DATA\MAPS\VC\stripclb\stripclb.IDE
+IDE DATA\MAPS\VC\washintn\washintn.IDE
+IDE DATA\MAPS\VC\washints\washints.IDE
+#IDE DATA\MAPS\VC\yacht\yacht.IDE
+IDE DATA\MAPS\VC\generic.IDE
+
+#otput
+#IPL DATA\MAPS\output\output_0.IPL
+#IPL DATA\MAPS\output\output_1.IPL
+#IPL DATA\MAPS\output\output_2.IPL
+#IPL DATA\MAPS\output\output_3.IPL
+#IPL DATA\MAPS\output\output_4.IPL
+#IPL DATA\MAPS\output\output_5.IPL
+#IPL DATA\MAPS\output\output_6.IPL
+#IPL DATA\MAPS\output\output_7.IPL
+#IPL DATA\MAPS\output\output_8.IPL
+#IPL DATA\MAPS\output\output_9.IPL
+#IPL DATA\MAPS\output\output_10.IPL
+#IPL DATA\MAPS\output\output_11.IPL
+#IPL DATA\MAPS\output\output_12.IPL
+#IPL DATA\MAPS\output\output_13.IPL
+#IPL DATA\MAPS\output\output_14.IPL
+
+#VC Map
+IPL DATA\MAPS\VC\airport\airport.IPL
+#IPL DATA\MAPS\VC\airportN\airportN.IPL
+#IPL DATA\MAPS\VC\bank\bank.IPL
+#IPL DATA\MAPS\VC\bridge\bridge.IPL
+IPL DATA\MAPS\VC\cisland\cisland.IPL
+IPL DATA\MAPS\VC\club\club.IPL
+#IPL DATA\MAPS\VC\concerth\concerth.IPL
+#IPL DATA\MAPS\VC\docks\docks.IPL
+#IPL DATA\MAPS\VC\downtown\downtown.IPL
+#IPL DATA\MAPS\VC\downtows\downtows.IPL
+IPL DATA\MAPS\VC\golf\golf.IPL
+#IPL DATA\MAPS\VC\haiti\haiti.IPL
+#IPL DATA\MAPS\VC\haitin\haitin.IPL
+#IPL DATA\MAPS\VC\hotel\hotel.IPL
+#IPL DATA\MAPS\VC\islandsf\islandsf.IPL
+#IPL DATA\MAPS\VC\lawyers\lawyers.IPL
+#IPL DATA\MAPS\VC\littleha\littleha.IPL
+IPL DATA\MAPS\VC\mall\mall.IPL
+IPL DATA\MAPS\VC\mansion\mansion.IPL
+IPL DATA\MAPS\VC\nbeach\nbeach.IPL
+IPL DATA\MAPS\VC\nbeachbt\nbeachbt.IPL
+IPL DATA\MAPS\VC\nbeachw\nbeachw.IPL
+IPL DATA\MAPS\VC\oceandn\oceandn.IPL
+IPL DATA\MAPS\VC\oceandrv\oceandrv.IPL
+#IPL DATA\MAPS\VC\stadint\stadint.IPL
+IPL DATA\MAPS\VC\starisl\starisl.IPL
+#IPL DATA\MAPS\VC\stripclb\stripclb.IPL
+IPL DATA\MAPS\VC\washintn\washintn.IPL
+IPL DATA\MAPS\VC\washints\washints.IPL
+#IPL DATA\MAPS\VC\yacht\yacht.IPL
+IPL DATA\MAPS\VC\VC_generics0.IPL
+IPL DATA\MAPS\VC\VC_generics1.IPL
+IPL DATA\MAPS\VC\VC_generics2.IPL
+IPL DATA\MAPS\VC\VC_generics3.IPL
+IPL DATA\MAPS\VC\VC_generics4.IPL
+
+IPL DATA\MAP.ZON
+IPL DATA\INFO.ZON
+
+#загрузка файлов расположения объектов карты
+IPL DATA\MAPS\sopki\sopki.IPL
+IPL DATA\MAPS\sopki\sopki_add2.IPL
+IPL DATA\MAPS\sopki\sopki_add3.IPL
+IPL DATA\MAPS\sopki\sveg.IPL
+IPL DATA\MAPS\sopki\add_sopki.IPL
+IPL DATA\MAPS\sopki\sopki_lesa.IPL
+IPL DATA\MAPS\Arzamas\arzamas_N.IPL
+IPL DATA\MAPS\Arzamas\arzamas_N2.IPL
+IPL DATA\MAPS\Arzamas\arzamas_Ngen.IPL
+IPL DATA\MAPS\Arzamas\country_WN.IPL
+IPL DATA\MAPS\Arzamas\arzamas_veg.IPL
+IPL DATA\MAPS\Arzamas\arzamas_veg2.IPL
+IPL DATA\MAPS\Arzamas\arzamas_park.IPL
+IPL DATA\MAPS\Arzamas\arzamas_S.IPL
+IPL DATA\MAPS\crteam\crteam.IPL
+IPL DATA\MAPS\crteam\crteam_gen.IPL
+IPL DATA\MAPS\crteam\crteam_veg.IPL
+IPL DATA\MAPS\ryazan\ryazan.IPL
+IPL DATA\MAPS\ryazan\ryazan_gen.IPL
+IPL DATA\MAPS\ryazan\ryazan_veg.IPL
+IPL DATA\MAPS\ryazan\koryakino.IPL
+IPL DATA\MAPS\ryazan\koryakino_gen.IPL
+IPL DATA\MAPS\russia\garel.IPL
+IPL DATA\MAPS\russia\garel_gen.IPL
+IPL DATA\MAPS\russia\materik.IPL
+IPL DATA\MAPS\russia\materik_objs.IPL
+IPL DATA\MAPS\russia\materik_gen.IPL
+IPL DATA\MAPS\russia\SPC_generic.IPL
+IPL DATA\MAPS\lytkarino\lytkarino.IPL
+IPL DATA\MAPS\lytkarino\lyt_genveg.IPL
+IPL DATA\MAPS\russia\rogovichi.IPL
+IPL DATA\MAPS\russia\rublevo.ipl
+IPL DATA\MAPS\russia\sevwillage.ipl
+###IPL DATA\MAPS\russia\iceland.ipl
+###IPL DATA\MAPS\russia\tesla_place.IPL
+IPL DATA\MAPS\generic\railway.IPL
+IPL DATA\MAPS\russia\ints.IPL
+###IPL DATA\MAPS\russia\bigRyazanLes.IPL
+###IPL DATA\MAPS\russia\OpenAir.IPL
+IPL DATA\MAPS\batyrevo\batyrevo.IPL
+IPL DATA\MAPS\batyrevo\batyrevo_tree.IPL
+###IPL DATA\MAPS\russia\metro2.IPL
+IPL DATA\MAPS\russia\new-generic.IPL
+IPL DATA\MAPS\russia\svalka.IPL
+###IPL DATA\MAPS\russia\n-winter.ipl
+IPL DATA\MAPS\russia\w_barrel5.ipl
+IPL DATA\MAPS\russia\forest1.ipl
+IPL DATA\MAPS\russia\forest2.ipl
+IPL DATA\MAPS\russia\forest3.ipl
+IPL DATA\MAPS\russia\forest4.ipl
+IPL DATA\MAPS\russia\forest5.ipl
+IPL DATA\MAPS\russia\forest6.ipl
+IPL DATA\MAPS\russia\forest7.ipl
+###IPL DATA\MAPS\rublevo\rublevo.IPL
+IPL DATA\MAPS\russia\metro.ipl
+
+#Загрузка файлов интерьеров
+IPL DATA\MAPS\mod_int\mod_int.IPL
+IPL DATA\MAPS\mod_int\AudiosurfGame.IPL
+
+#Загрузка файлов игрового дизайна
+IPL DATA\MAPS\audiozon.IPL
+IPL DATA\MAPS\cull.IPL
+
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
+IPL data\maps\empty.ipl
